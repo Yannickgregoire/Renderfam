@@ -12,7 +12,8 @@
     "dev": "parallelshell \"npm run watch:js\" \"npm run watch:css\"",
     "watch:css": "node-sass --watch src/app/sass/style.scss dist/css/style.css",
     "watch:js": "webpack-dev-server --config ./webpack.config.js --mode development",
-    "server": "node src/server/server.js"
+    "server": "node src/server/server.js",
+    "ngrok": "ngrok http 8080 -host-header=\"localhost:8080\""
   },
   "author": "",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.5",
     "chalk": "^2.4.2",
+    "ngrok": "^3.1.1",
     "node-sass": "^4.11.0",
     "parallelshell": "3.0.1",
     "react-hot-loader": "^4.8.3",
@@ -43,6 +45,7 @@
   },
   "dependencies": {
     "express": "^4.16.4",
+    "pts": "^0.8.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "socket.io": "^2.2.0"

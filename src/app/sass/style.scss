@@ -9,19 +9,51 @@
   font-style: normal;
 }
 
-html,
+$base-font-size: 14px;
+$heading-scale: 4;
+
 body {
+  margin: 0;
+  padding: 0;
   font-variant-ligatures: normal;
   font-family: "Space Mono", monospace;
-  background-color: #180000;
+  background-color: black;
   color: white;
-  padding: 2vw;
-  font-size: 17px;
+  font-size: $base-font-size;
   line-height: 1.4rem;
 }
 
-$base-font-size: 15px;
-$heading-scale: 8;
+.canvas {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+
+  .line {
+      height: 1vh;
+      transform: scaleY(0);
+      transition: all 500ms cubic-bezier(0.000, 1.005, 0.220, 1.000); 
+  }
+}
+
+.list {
+    position: relative;
+    margin: 5vw;
+    padding: 5vw;
+    width: 80vw;
+    background-color: black;
+    box-shadow: 0 0 10px 0 rgba(0,0,0,.8);
+    border-radius: 4px;
+  }
+
+  @media only screen and (min-width: 768px) {
+    .list {
+        width: 50vw;
+      }
+  }
+
+
 
 @for $i from 1 through 6 {
   h#{$i} {
@@ -33,13 +65,10 @@ $heading-scale: 8;
   }
 }
 
-.lightpurple {
-  color: #a1a1ea;
-}
-.purple {
-  color: #7a7ae8;
+.grey {
+  opacity: .2;
 }
 
-.red {
-  color: #7e1a00;
+.blue {
+    color: #8ee8e9;
 }
