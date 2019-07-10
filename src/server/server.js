@@ -3,34 +3,22 @@ const chalk = require('chalk');
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-let count = 0;
 let users = [];
+let userCount = 0;
 
+let frames = [];
+for (let i = 0; i < 360; i++) {
+    frames.push({ id: i, rendered: false, rendering: false, image: '' })
+}
 
-const gradients = [
-    [[0, 201, 255], [146, 254, 157]],
-    [[255, 0, 255], [0, 219, 222]],
-    [[254, 172, 94], [199, 121, 208]],
-    [[199, 121, 208], [75, 192, 200]],
-    [[67, 206, 162], [24, 90, 157]],
-    [[53, 0, 51], [11, 135, 147]],
-    [[225, 238, 195], [240, 80, 83]],
-    [[34, 193, 195], [253, 187, 45]],
-    [[255, 153, 102], [255, 94, 98]],
-    [[127, 0, 255], [225, 0, 255]],
-    [[58, 28, 113], [255, 175, 123]],
-    [[239, 59, 54], [255, 255, 255]],
-    [[195, 55, 100], [29, 38, 113]]
-];
+console.log(frames)
 
 const file = {
-    title: '~/Movie_final-dev 02 (edited).mp4',
-    image: getGradient()
+    title: '~/Movie_final-def_02_(edited)-final_export.mp4'
 };
 
 let chunk = 0;
 let progress = 0;
-const increment = .0306314159265359;
 
 const messages = {
     connected: 'a user connected',
@@ -55,32 +43,43 @@ function connect(socket) {
         onProgress(socket);
     });
 
-    count++;
+    socket.on('requestFrame', function () {
+        onRequestFrame();
+    });
+
+    socket.on('completeFrame', function ( data ) {
+        onCompleteFrame(data.id);
+    });
+
+    userCount++;
     registerUser(socket);
 
-    io.sockets.emit('count', count);
+    io.sockets.emit('userCount', userCount);
     io.sockets.emit('users', users);
-    io.sockets.emit('file', file);
-    io.sockets.emit('chunk', chunk);
+    // io.sockets.emit('file', file);
+    // io.sockets.emit('chunk', chunk);
 
-    io.sockets.emit('progress', progress);
+    io.sockets.emit('frame', file);
+
+    // io.sockets.emit('progress', progress);
     // io.sockets.emit('message', messages.connected);
 
     log(chalk.green(messages.connected));
-    log(chalk.blue('users: ' + count));
+    log(chalk.blue('users: ' + userCount));
+    log(chalk.green(getUnrenderedFrame().id));
 
 }
 
 function disconnect(socket) {
 
-    count--;
+    userCount--;
     unregisterUser(socket)
-    io.sockets.emit('count', count);
+    io.sockets.emit('userCount', userCount);
     io.sockets.emit('users', users);
     io.sockets.emit('message', messages.disconnected);
 
     log(chalk.red('a user disconnected'));
-    log(chalk.blue('users: ' + count));
+    log(chalk.blue('users: ' + userCount));
 
 }
 
@@ -104,28 +103,24 @@ function onProgress(socket) {
     }
 }
 
-function getGradient() {
-    const gradient = gradients[Math.floor(Math.random() * gradients.length)];
-    const lines = 100;
-    let array = [];
-    for (i = 0; i < lines; i++) {
-        array.push({ id: i, rgb: pickHex(gradient[0], gradient[1], i / lines) })
-    }
-    return shuffle(array);
+function onRequestFrame() {
+    const frame = getUnrenderedFrame();
+    frame.rendering = true;
+    return frame;
 }
 
-function pickHex(color1, color2, percent) {
-    return [Math.round(color1[0] * percent + color2[0] * (1 - percent)),
-    Math.round(color1[1] * percent + color2[1] * (1 - percent)),
-    Math.round(color1[2] * percent + color2[2] * (1 - percent))];
+function onCompleteFrame(id) {
+    const frame = getFrameByID(id);
+    frame.rendering = false;
+    frame.rendered = true;
 }
 
-function shuffle(a) {
-    for (let i = a.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
+function getUnrenderedFrame() {
+    return frames.filter(frame => frame.rendered === false && frame.rendering === false)[0];
+}
+
+function getFrameByID(id) {
+    return frames.filter(frame => frame.rendered === false && frame.rendering === false)[0];
 }
 
 function log(message) {
